@@ -9,8 +9,9 @@ module.exports = {
         nsis: {
           oneClick: false, // 取消一键安装
           allowToChangeInstallationDirectory: true, // 允许修改安装目录
-        }
-      }
+        },
+      },
+      nodeIntegration: true // node集成
     }
   }
 }
