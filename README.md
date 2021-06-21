@@ -1,19 +1,11 @@
 # qatools
 
-## Project setup
-```
-npm install
-```
+## 创建项目
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+### 创建vue项目
+vue create qatools
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### 引入electron
+*搜索vue-cli-plugin-electron-builder，根据文档安装
+vue add electron-builder
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
