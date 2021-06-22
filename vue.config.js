@@ -1,4 +1,23 @@
 module.exports = {
+  publicPath: './',
+  configureWebpack: {
+    resolve: {
+      alias: {
+        'assets': '@/assets',
+        'config': '@/config',
+        'server': '@/server',
+        'common': '@/common',
+        'components': '@/components',
+        'network': '@/network',
+        'views': '@/views',
+        'pages': '@/pages',
+        'controllers': '@/server/controllers',
+        'db': '@/server/db',
+        'model': '@/server/model',
+        'routes': '@/server/routes'
+      }
+    }
+  },
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
