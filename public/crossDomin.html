@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>跨域测试</title>
+
+  <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+  
+  <button id="btnGet">GET</button>
+  <button id="btnPost">POST</button>
+
+  <script>
+    $(function() {
+      // 1.测试get接口
+      $('#btnGet').on('click', function () {
+        $.ajax({
+          type: 'GET',
+          url: 'http://127.0.0.1:5000/api/get',
+          data: {name: 'zhangsan', age: 20},
+          success: function (res) {
+            console.log(res);
+          }
+        })
+      })
+
+      // 2.测试post接口
+      $('#btnPost').on('click', function () {
+        $.ajax({
+          type: 'POST',
+          url: 'http://127.0.0.1:5000/api/post',
+          data: {bookName: '蛮荒记', author: '树下野狐'},
+          success: function (res) {
+            console.log(res);
+          }
+        })
+      })
+    })
+  </script>
+</body>
+</html>
