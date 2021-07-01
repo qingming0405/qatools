@@ -1,0 +1,15 @@
+html,body{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family:PingFang SC;
+}
+div,p,img,input,button,iframe,a{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+  outline: none;
+}
+
