@@ -37,11 +37,6 @@ const serverHandler = (req, res) => {
     // 设置响应格式
     res.statusCode = 200
     res.setHeader('Content-Type', 'application/json')
-    res.setHeader('Access-Control-Allow-Origin','*');
-    res.setHeader('Access-Control-Allow-Headers','X-Request-With');
-    res.setHeader("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-    res.setHeader("X-Powered-By",' 3.2.1');
-    // res.setHeader("Content-Type", "text/html");
 
     // 获取path
     const url = req.url

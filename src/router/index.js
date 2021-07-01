@@ -7,20 +7,33 @@ import Index from 'pages/Index.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'Test',
-  //   component: Test
-  // },
-  // {
-  //   path: '/',
-  //   name: 'Login',
-  //   component: Login
-  // },
   {
     path: '/',
+    redirect: '/index/home'
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    component: Test
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/index',
     name: 'Index',
-    component: Index
+    component: Index,
+    meta: {
+      title: 'main-page'
+    },
+    children: [
+      {
+        path: 'home',
+        component: () => import('views/home/Home')
+      }
+    ]
   },
 ]
 
