@@ -11,6 +11,9 @@ export default {
     return {
 
     }
+  },
+  created() {
+    console.log('Home path: ', this.$route.path);
   }
 }
 </script>
@@ -18,8 +21,8 @@ export default {
 <style lang="scss" scoped>
   .home {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 44px);
 
-    // font-size: 16px;
+    font-size: 16px;
   }
 </style>

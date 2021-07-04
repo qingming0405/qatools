@@ -9,7 +9,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/index/home'
+    redirect: '/home'
   },
   {
     path: '/test',
@@ -22,7 +22,7 @@ const routes = [
     component: Login
   },
   {
-    path: '/index',
+    path: '', // 设置主页面默认路径为空字符串
     name: 'Index',
     component: Index,
     meta: {
@@ -32,6 +32,10 @@ const routes = [
       {
         path: 'home',
         component: () => import('views/home/Home')
+      },
+      {
+        path: 'im-ex-offset',
+        component: () => import('views/im-ex/offset/Offset')
       }
     ]
   },

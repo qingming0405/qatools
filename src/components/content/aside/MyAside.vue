@@ -11,8 +11,9 @@
       @close="handleClose"
       background-color="#30373D"
       text-color="#fff"
-      active-text-color="#ffd04b">
-      <el-menu-item index="home">
+      active-text-color="#ffd04b"
+      router>
+      <el-menu-item index="home" route="home">
         <i class="el-icon-s-home"></i>
         <span slot="title">首页</span>
       </el-menu-item>
@@ -22,7 +23,7 @@
           <span>导入导出</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="IE-offset">偏移量导入导出</el-menu-item>
+          <el-menu-item index="IE-offset" route="im-ex-offset">偏移量导入导出</el-menu-item>
           <el-menu-item index="IE-alarm">报警导入导出</el-menu-item>
           <el-menu-item index="IE-data">数据导入导出</el-menu-item>
         </el-menu-item-group>
