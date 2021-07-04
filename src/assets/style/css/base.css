@@ -37,3 +37,7 @@
 .font-bold{
   font-weight: bold;
 }
+
+.color-alarm {
+  color: var(--color-alarm);
+}

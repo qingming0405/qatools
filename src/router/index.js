@@ -9,7 +9,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/im-ex-offset'
   },
   {
     path: '/test',
@@ -36,6 +36,10 @@ const routes = [
       {
         path: 'im-ex-offset',
         component: () => import('views/im-ex/offset/Offset')
+      },
+      {
+        path: 'im-ex-alarm',
+        component: () => import('views/im-ex/alarm/Alarm.vue')
       }
     ]
   },

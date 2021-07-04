@@ -3,7 +3,7 @@
     <div class="main-view">
       <div class="form-item form-item-folder">
         <span class="form-label">组织：</span>
-        <el-select v-model="curFolder.t_id" filterable placeholder="请选择组织">
+        <el-select v-model="curT_id" filterable placeholder="请选择组织" @change="folderChange">
           <el-option v-for="folder in folderList" :key="folder.t_id" :label="folder.t_name" :value="folder.t_id"></el-option>
         </el-select>
       </div>
@@ -17,9 +17,9 @@
       </div>
     </div>
     <button-bar>
-      <el-button type="primary">全选</el-button>
-      <el-button type="primary">反选</el-button>
-      <el-button type="primary">全不选</el-button>
+      <el-button type="primary" @click="checkAll(0)">全选</el-button>
+      <el-button type="primary" @click="checkAll(2)">反选</el-button>
+      <el-button type="primary" @click="checkAll(1)">全不选</el-button>
       <el-button type="primary">导出</el-button>
     </button-bar>
   </div>
@@ -27,6 +27,8 @@
 
 <script>
 import ButtonBar from 'components/common/buttonBar/ButtonBar.vue'
+import {getFolder} from 'common/util.js'
+
 export default {
   name: 'OffsetExport',
   components: {
@@ -35,23 +37,49 @@ export default {
   data() {
     return {
       folderList: [], // 组织列表
+      curT_id: '',
       curFolder: {}, // 选中组织
       machineList: [], // 当前机组列表
     }
   },
   created() {
-    this.folderList = [
-      {t_id: 0, t_name: '组织1'},
-      {t_id: 1, t_name: '组织2'},
-      {t_id: 2, t_name: '组织3'}
-    ]
-    for (let i = 0; i < 100; i++) {
-      this.machineList.push({
-        mac_id: i,
-        mac_name: `风电机组大风机${i}`,
-        checked: true
-      })
-      
+    this.init()
+  },
+  methods: {
+    init() {
+      this.folderList = [
+        {t_id: 0, t_name: '组织1'},
+        {t_id: 1, t_name: '组织2'},
+        {t_id: 2, t_name: '组织3'}
+      ]
+      this.machineList = []
+      for (let i = 0; i < 100; i++) {
+        this.machineList.push({
+          mac_id: i,
+          mac_name: `${this.curFolder.t_name}-风电机组${i}`,
+          checked: true
+        })
+        
+      }
+    },
+    // 组织改变
+    folderChange(t_id) {
+      this.curFolder = getFolder(this.folderList, t_id)
+      this.init()
+    },
+    // 全选操作
+    checkAll(type) {
+      for (const item of this.machineList) {
+        if(type === 2){
+          item.checked = !item.checked
+        }
+        else if(type === 1) {
+          item.checked = false
+        }
+        else {
+          item.checked = true
+        }
+      }
     }
   }
 }
@@ -87,7 +115,20 @@ export default {
       }
 
       .form-item-mac {
+        height: calc(100% - 80px);
+
+        display: flex;
+
         .list-grid {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 10px;
+          list-style-type: none;
+          overflow-y: scroll;
+          border: 1px solid #c0c0c0;
+          border-radius: 4px;
+
           display: grid;
           grid-template-columns: repeat(5, 20%);
           grid-row-gap: 20px;

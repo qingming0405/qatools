@@ -24,8 +24,8 @@
         </template>
         <el-menu-item-group>
           <el-menu-item index="IE-offset" route="im-ex-offset">偏移量导入导出</el-menu-item>
-          <el-menu-item index="IE-alarm">报警导入导出</el-menu-item>
-          <el-menu-item index="IE-data">数据导入导出</el-menu-item>
+          <el-menu-item index="IE-alarm" route="im-ex-alarm">报警导入导出</el-menu-item>
+          <!-- <el-menu-item index="IE-data">数据导入导出</el-menu-item> -->
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
