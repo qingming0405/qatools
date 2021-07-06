@@ -28,6 +28,7 @@
 <script>
 import ButtonBar from 'components/common/buttonBar/ButtonBar.vue'
 import {getFolder} from 'common/util.js'
+import { api_getAllFolderList,api_getMachineList } from "server/api/common.js";
 
 export default {
   name: 'OffsetExport',
@@ -47,25 +48,47 @@ export default {
   },
   methods: {
     init() {
-      this.folderList = [
-        {t_id: 0, t_name: '组织1'},
-        {t_id: 1, t_name: '组织2'},
-        {t_id: 2, t_name: '组织3'}
-      ]
-      this.machineList = []
-      for (let i = 0; i < 100; i++) {
-        this.machineList.push({
-          mac_id: i,
-          mac_name: `${this.curFolder.t_name}-风电机组${i}`,
-          checked: true
-        })
-        
-      }
+      this.getFolderList()
+    },
+    // 获取组织列表
+    getFolderList() {
+      api_getAllFolderList().then(res => {
+        if(res.data && res.data.length > 0) {
+          this.folderList = res.data.map(folder => {
+            return {
+              t_id: folder.t_id,
+              t_name: folder.t_name
+            }
+          })
+          this.curFolder = this.folderList[0]
+          this.curT_id = this.curFolder.t_id
+          this.getMachineList()
+        }
+        else {
+          this.curFolder = {}
+          this.curT_id = ''
+        }
+      })
     },
     // 组织改变
     folderChange(t_id) {
       this.curFolder = getFolder(this.folderList, t_id)
-      this.init()
+      this.getMachineList()
+    },
+    // 获取机组列表
+    getMachineList() {
+      this.machineList = []
+      api_getMachineList(this.curT_id, 'FAMILY').then(res => {
+        if(res.data && res.data.length > 0) {
+          this.machineList = res.data.map(mac => {
+            return {
+              mac_id: mac.machine_id,
+              mac_name: mac.m_me,
+              checked: true
+            }
+          })
+        }
+      })
     },
     // 全选操作
     checkAll(type) {
@@ -129,9 +152,14 @@ export default {
           border: 1px solid #c0c0c0;
           border-radius: 4px;
 
-          display: grid;
-          grid-template-columns: repeat(5, 20%);
-          grid-row-gap: 20px;
+          display: flex;
+          flex-wrap: wrap;
+          align-content: flex-start;
+
+          li {
+            width: 20%;
+            height: 32px;
+          }
         }
       }
       

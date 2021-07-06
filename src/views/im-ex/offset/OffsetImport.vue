@@ -28,6 +28,7 @@
 <script>
 import ButtonBar from 'components/common/buttonBar/ButtonBar.vue'
 import {getFolder} from 'common/util.js'
+import { api_getAllFolderList,api_getMachineList } from "server/api/common.js";
 
 export default {
   name: 'OffsetImport',
@@ -50,19 +51,6 @@ export default {
   },
   methods: {
     init() {
-      this.folderList = [
-        {t_id: 0, t_name: '组织1'},
-        {t_id: 1, t_name: '组织2'},
-        {t_id: 2, t_name: '组织3'}
-      ]
-      this.machineList = []
-      for (let i = 0; i < 100; i++) {
-        this.machineList.push({
-          mac_id: i,
-          mac_name: `${this.curFolder.t_name}-风电机组${i}`,
-          checked: true
-        })
-      }
       this.logList = []
       this.isShowReimport = false
       for(let i=0; i<20; i++) {
@@ -76,6 +64,26 @@ export default {
           state
         })
       }
+      this.getFolderList()
+    },
+    // 获取组织列表
+    getFolderList() {
+      api_getAllFolderList().then(res => {
+        if(res.data && res.data.length > 0) {
+          this.folderList = res.data.map(folder => {
+            return {
+              t_id: folder.t_id,
+              t_name: folder.t_name
+            }
+          })
+          this.curFolder = this.folderList[0]
+          this.curT_id = this.curFolder.t_id
+        }
+        else {
+          this.curFolder = {}
+          this.curT_id = ''
+        }
+      })
     },
     // 组织改变
     folderChange(t_id) {

@@ -1,5 +1,5 @@
-const mysql = require('mysql')
-const {MYSQL_CONFIG} = require('../../config/db.js')
+import mysql from 'mysql'
+import {MYSQL_CONFIG} from '../../config/db.js'
 
 // 创建连接对象
 const connection = mysql.createConnection(MYSQL_CONFIG)
@@ -38,6 +38,6 @@ function execSQL(sql) {
   return promise
 }
 
-module.exports = {
+export {
   execSQL
 }
