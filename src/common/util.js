@@ -14,3 +14,14 @@ export function getMachine(machineList, mac_id) {
     return mac.mac_id === mac_id
   })
 }
+
+// 获取xml字符串的属性
+export function getPropFromXmlStr(xmlStr, prop) {
+  let startIndex = xmlStr.indexOf(prop+'=')
+  if(startIndex >= 0) {
+    let start = xmlStr.indexOf('\"', startIndex) // 属性值的引号索引
+    let end = xmlStr.indexOf('\"', start+1)
+    return xmlStr.slice(start+1, end)
+  }
+  return ''
+}

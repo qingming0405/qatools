@@ -20,15 +20,18 @@
       <el-button type="primary" @click="checkAll(0)">全选</el-button>
       <el-button type="primary" @click="checkAll(2)">反选</el-button>
       <el-button type="primary" @click="checkAll(1)">全不选</el-button>
-      <el-button type="primary">导出</el-button>
+      <el-button type="primary" @click="onExport">导出</el-button>
     </button-bar>
   </div>
 </template>
 
 <script>
 import ButtonBar from 'components/common/buttonBar/ButtonBar.vue'
+import { downloadFile } from "common/public.js";
+import { APPLICATION, VERSION, FILETYPE } from "common/const.js";
 import {getFolder} from 'common/util.js'
-import { api_getAllFolderList,api_getMachineList } from "server/api/common.js";
+import { api_getAllFolderList, api_getMachineList } from "server/api/common.js";
+import { api_getAllPositionList_offset } from "server/api/im-ex.js";
 
 export default {
   name: 'OffsetExport',
@@ -103,6 +106,28 @@ export default {
           item.checked = true
         }
       }
+    },
+    onExport() {
+      let macIds = this.machineList.filter(mac => mac.checked == true).map(mac => mac.mac_id)
+      let content = {}
+      api_getAllPositionList_offset(macIds).then(res => {
+        console.log('res.data', res.data);
+        if(res.data && JSON.stringify(res.data) !== '{}') {
+          content = res.data
+        }
+        if(JSON.stringify(content) === '{}') {
+          alert('没有数据可以导出')
+          return
+        }
+        content.info = {
+          application: APPLICATION,
+          version: VERSION,
+          fileType: FILETYPE.OFFSET_CONFIG,
+          t_id: this.curT_id
+        }
+        let fileName = `偏移量设置-${this.curFolder.t_name}.json`
+        downloadFile(JSON.stringify(content), fileName)
+      })
     }
   }
 }
