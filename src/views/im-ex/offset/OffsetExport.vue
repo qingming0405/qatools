@@ -110,20 +110,20 @@ export default {
     onExport() {
       let macIds = this.machineList.filter(mac => mac.checked == true).map(mac => mac.mac_id)
       let content = {}
+      
       api_getAllPositionList_offset(macIds).then(res => {
-        console.log('res.data', res.data);
-        if(res.data && JSON.stringify(res.data) !== '{}') {
-          content = res.data
-        }
-        if(JSON.stringify(content) === '{}') {
-          alert('没有数据可以导出')
-          return
-        }
         content.info = {
           application: APPLICATION,
           version: VERSION,
           fileType: FILETYPE.OFFSET_CONFIG,
           t_id: this.curT_id
+        }
+        if(res.data && JSON.stringify(res.data) !== '{}') {
+          content.data = res.data
+        }
+        if(typeof content.data === 'undefined') {
+          alert('没有数据可以导出')
+          return
         }
         let fileName = `偏移量设置-${this.curFolder.t_name}.json`
         downloadFile(JSON.stringify(content), fileName)

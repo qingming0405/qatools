@@ -10,25 +10,31 @@
       <div class="form-item form-item-mac">
         <span class="form-label">日志：</span>
         <ul class="list-ul">
-          <li v-for="item in logList" :key="item.index" :class="{'color-alarm': item.state === 1}">
+          <li v-for="item in logList" :key="item.count" :class="{'color-alarm': item.state === 1}">
             {{getLogItem(item)}}
           </li>
         </ul>
       </div>
+    </div>
+    <div class="progress-div">
+      <el-progress v-show="importState !== 0" :text-inside="true" :stroke-width="16" :percentage="percentage"></el-progress>
     </div>
     <button-bar>
       <el-button v-show="isShowReimport" type="danger" @click="reimportHandler()">重新导入</el-button>
       <el-button v-if="importState === 0" type="primary" @click="importHandler()">导入</el-button>
       <el-button v-else-if="importState === 1" type="info" @click="cancelHandler()">取消</el-button>
       <el-button v-else type="success" @click="finishedHandler()">完成</el-button>
+      <input ref="offsetFile" type="file" style="display:none" @change="uploadFile">
     </button-bar>
   </div>
 </template>
 
 <script>
 import ButtonBar from 'components/common/buttonBar/ButtonBar.vue'
-import {getFolder} from 'common/util.js'
-import { api_getAllFolderList,api_getMachineList } from "server/api/common.js";
+import { APPLICATION, VERSION, FILETYPE } from "common/const.js";
+import { round, getFolder, getMachine } from 'common/util.js'
+import { api_getAllFolderList, api_getMachineList } from "server/api/common.js";
+import { api_updateOffset } from "server/api/im-ex.js";
 
 export default {
   name: 'OffsetImport',
@@ -44,6 +50,7 @@ export default {
       logList: [], // 日志列表
       importState: 0, // 导入状态 0=准备导入 1=正在导入 2=导入完成
       isShowReimport: false, // 是否显示重新导入按钮
+      percentage: 0 // 导入进度
     }
   },
   created() {
@@ -51,19 +58,6 @@ export default {
   },
   methods: {
     init() {
-      this.logList = []
-      this.isShowReimport = false
-      for(let i=0; i<20; i++) {
-        let state =  Math.floor(Math.random()*3)
-        if(state === 1) {
-          this.isShowReimport = true
-        }
-        this.logList.push({
-          index: i,
-          mac_name: `${this.curFolder.t_name}-风电机组${i}`,
-          state
-        })
-      }
       this.getFolderList()
     },
     // 获取组织列表
@@ -78,6 +72,7 @@ export default {
           })
           this.curFolder = this.folderList[0]
           this.curT_id = this.curFolder.t_id
+          this.getMachineList()
         }
         else {
           this.curFolder = {}
@@ -88,11 +83,26 @@ export default {
     // 组织改变
     folderChange(t_id) {
       this.curFolder = getFolder(this.folderList, t_id)
-      this.init()
+      this.getMachineList()
+    },
+    // 获取机组列表
+    getMachineList() {
+      this.machineList = []
+      api_getMachineList(this.curT_id, 'FAMILY').then(res => {
+        if(res.data && res.data.length > 0) {
+          this.machineList = res.data.map(mac => {
+            return {
+              mac_id: mac.machine_id,
+              mac_name: mac.m_me,
+              checked: true
+            }
+          })
+        }
+      })
     },
     // 日志项显示
     getLogItem(item) {
-      return `${item.index}. ${item.mac_name}${this.importStateDesc(item.state)}`
+      return `${item.count}. ${item.mac_name}${this.importStateDesc(item.state)}`
     },
     // 日主：导入状态描述
     importStateDesc(state) {
@@ -106,18 +116,94 @@ export default {
         return '导入成功。'
       }
     },
+    // 重新导入
     reimportHandler() {
-
-    },
-    importHandler() {
+      this.doUploadFile()
       this.importState = 1
     },
-    cancelHandler() {
-      this.importState = 2
+    // 导入
+    importHandler() {
+      this.doUploadFile()
+      this.importState = 1
     },
+    // 取消
+    cancelHandler() {
+      this.importState = 0
+    },
+    // 完成
     finishedHandler() {
       this.importState = 0
       this.isShowReimport = false
+    },
+    // 上传文件响应
+    doUploadFile() {
+      this.$refs.offsetFile.click()
+    },
+    // 上传文件
+    uploadFile(event) {
+      // 初始化
+      this.logList = []
+      this.isShowReimport = false
+
+      //文件操作
+      let file = event.target.files[0]
+      if(!(/json/i).test(file.type)) {
+        alert('导入文件类型应当为JSON')
+        return
+      }
+      let fr = new FileReader()
+      fr.readAsText(file)
+      fr.onload = (e) => {
+        let fc = JSON.parse(e.target.result)
+        if(fc && fc.info && fc.data && this.isValidFile(fc.info)) {
+          let macIds = Object.keys(fc.data)
+          if(macIds && macIds.length>0) {
+            let sum = macIds.length
+            this.updateOffset(macIds, sum, fc.data)
+          }
+        }
+        else {
+          alert('文件格式不正确')
+        }
+      }
+    },
+    // 验证文件信息
+    isValidFile(info) {
+      if(info && info.application === APPLICATION && info.fileType === FILETYPE.OFFSET_CONFIG && info.t_id === this.curT_id) {
+        return true
+      }
+      return false
+    },
+    updateOffset(macIds, sum, fcData) {
+      let mac_id = macIds.shift()
+      let count = sum - macIds.length
+      this.updateLog(mac_id, count, 2)
+      api_updateOffset(mac_id, fcData[mac_id]).then(res => {
+        this.percentage = round(count*100/sum)
+        if(res.data) { // 返回更新成功
+          this.updateLog(mac_id, count, 0)
+        }
+        else {
+          this.isShowReimport = true // 有机组更新失败，则显示
+          this.updateLog(mac_id, count, 1)
+        }
+        if(this.importStat === 1 && macIds.length > 0) {
+          this.updateOffset(macIds, sum, fcData)
+        }
+        else if(macIds.length === 0) {
+          this.importState = 2
+        }
+      })
+      
+    },
+    // 更新日志
+    updateLog(mac_id, count, state) {
+      let mac = getMachine(this.machineList, mac_id)
+      this.logList[count-1] = {
+        count,
+        mac_name: mac.mac_name,
+        state
+      }
     }
   }
 }
@@ -128,7 +214,7 @@ export default {
     height: 100%;
 
     .main-view {
-      height: calc(100% - 40px);
+      height: calc(100% - 80px);
 
       .form-item {
         font-size: 14px;
@@ -174,5 +260,15 @@ export default {
       }
       
     }
+
+    .progress-div {
+      padding: 10px 5px 0px 65px;
+      height: 30px;
+
+      .el-progress {
+        height: 100%;
+      }
+    }
+    
   }
 </style>

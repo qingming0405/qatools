@@ -24,7 +24,7 @@ export default {
     }
   },
   created() {
-    console.log('Offset path: ', this.$route.path);
+    // console.log('Offset path: ', this.$route.path);
   },
   methods: {
     handleClick(tab, event) {
