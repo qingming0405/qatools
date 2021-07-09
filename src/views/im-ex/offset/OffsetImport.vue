@@ -187,7 +187,7 @@ export default {
           this.isShowReimport = true // 有机组更新失败，则显示
           this.updateLog(mac_id, count, 1)
         }
-        if(this.importStat === 1 && macIds.length > 0) {
+        if(this.importState === 1 && macIds.length > 0) {
           this.updateOffset(macIds, sum, fcData)
         }
         else if(macIds.length === 0) {

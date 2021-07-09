@@ -33,7 +33,7 @@ export const dao_getAllPosList = (macIds, posTypes = []) => {
 // 修改测点的某个字段
 export const dao_updatePosField = (pos, field, value) => {
   let sql = `update c_machine_position set ${field}='${value}' where machine_id=${pos.machine_id} and position_type=${pos.position_type} and position_id=${pos.position_id}`
-  // console.log('sql', pos.machine_id + ' - ' + pos.position_id);
+  console.log('sql', pos.machine_id + ' - ' + pos.position_id);
   return execSQL(sql).then(res => {
     if(res.affectedRows > 0) {
       return true

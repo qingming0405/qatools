@@ -31,18 +31,20 @@
     </el-menu>
 
     <div class="version-div">
-      版本信息V{{version}}
+      版本信息{{version}}
     </div>
 
   </div>
 </template>
 
 <script>
+import { VERSION } from "common/const.js";
+
 export default {
   name: 'MyAside',
   data() {
     return {
-      version: '1.0.8'
+      version: VERSION
     }
   },
   methods: {
