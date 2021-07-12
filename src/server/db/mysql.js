@@ -1,20 +1,27 @@
 import mysql from 'mysql'
-import {MYSQL_CONFIG} from '../../config/db.js'
 
-// 创建连接对象
-const connection = mysql.createConnection(MYSQL_CONFIG)
+import path from 'path'
+import fs from 'fs'
 
-// 开始连接
-connection.connect()
 
-// mysql一段时间无动作会自动关闭
-connection.on('error', err => {
-  console.log('connection', connection);
-  connection.connect()
-})
+const isBuild = process.env.NODE_ENV === 'production'
+let fileLocation = path.join(__static, 'config/db.json')
+if(isBuild) {
+  fileLocation = path.join(__static, '../config/db.json')
+}
+let fileContents = fs.readFileSync(fileLocation, 'utf-8')
+let MYSQL_CONFIG = JSON.parse(fileContents)
 
 function execSQL(sql) {
   const promise = new Promise((resolve, reject) => {
+    let connection = mysql.createConnection(MYSQL_CONFIG)
+    connection.connect()
+    connection.on('error', err => {
+      console.log('connection', connection);
+      connection = mysql.createConnection(MYSQL_CONFIG)
+      connection.connect()
+    })
+
     connection.query(sql, (error, result) => {
       if(error) {
         reject(error)

@@ -119,12 +119,11 @@ export default {
     // 重新导入
     reimportHandler() {
       this.doUploadFile()
-      this.importState = 1
+      
     },
     // 导入
     importHandler() {
       this.doUploadFile()
-      this.importState = 1
     },
     // 取消
     cancelHandler() {
@@ -143,6 +142,7 @@ export default {
     uploadFile(event) {
       // 初始化
       this.logList = []
+      this.importState = 1
       this.isShowReimport = false
 
       //文件操作
