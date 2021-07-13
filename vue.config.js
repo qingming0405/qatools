@@ -26,7 +26,7 @@ module.exports = {
         extraResources: [{
           from: './public/config/',
           to: 'config/'
-        }],
+        }], // 拷贝静态资源
         win: {
           icon: './public/favicon.ico', // 设置图标
           target: [
