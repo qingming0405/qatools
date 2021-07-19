@@ -19,10 +19,13 @@
     <div class="progress-div">
       <el-progress v-show="importState !== 0" :text-inside="true" :stroke-width="16" :percentage="percentage"></el-progress>
     </div>
-    <button-bar>
+    <button-bar class="button-bar">
       <el-button v-show="isShowReimport" type="danger" @click="reimportHandler()">重新导入</el-button>
       <el-button v-if="importState === 0" type="primary" @click="importHandler()">导入</el-button>
-      <el-button v-else-if="importState === 1" type="info" @click="cancelHandler()">取消</el-button>
+      <el-popconfirm v-else-if="importState === 1" title="您确定取消导出过程吗？ 点击确定后已导入的配置会被还原" icon="el-icon-info" icon-color="red" 
+        @confirm="cancelHandler()">
+        <el-button type="info" slot="reference">取消</el-button>
+      </el-popconfirm>
       <el-button v-else type="success" @click="finishedHandler()">完成</el-button>
       <input ref="offsetFile" type="file" style="display:none" @change="uploadFile">
     </button-bar>
@@ -84,6 +87,12 @@ export default {
     folderChange(t_id) {
       this.curFolder = getFolder(this.folderList, t_id)
       this.getMachineList()
+      this.logList = []
+      this.importState = 0
+      this.isShowReimport = false
+    },
+    folderChangeHandler() {
+      
     },
     // 获取机组列表
     getMachineList() {
@@ -141,16 +150,19 @@ export default {
     // 上传文件
     uploadFile(event) {
       // 初始化
-      this.logList = []
-      this.importState = 1
-      this.isShowReimport = false
-
+      if(typeof event.target.files === 'undefined' || event.target.files.length === 0) {
+        return
+      }   
       //文件操作
       let file = event.target.files[0]
       if(!(/json/i).test(file.type)) {
-        alert('导入文件类型应当为JSON')
+        event.target.value = ''
+        this.$message.error('导入文件类型应该为JSON')
         return
       }
+      this.logList = []
+      this.importState = 1
+      this.isShowReimport = false
       let fr = new FileReader()
       fr.readAsText(file)
       fr.onload = (e) => {
@@ -163,8 +175,9 @@ export default {
           }
         }
         else {
-          alert('文件格式不正确')
+          this.$message.error('文件格式不正确或内容不匹配')
         }
+        event.target.value = ''
       }
     },
     // 验证文件信息
@@ -271,4 +284,13 @@ export default {
     }
     
   }
+  // /deep/.el-popconfirm {
+  //   font-size: 15px;
+
+  //   .el-popconfirm__main {
+  //     padding: 5px;
+  //     max-width: 280px;
+  //     font-size: 12px;
+  //   }
+  // }
 </style>

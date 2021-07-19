@@ -122,7 +122,7 @@ export default {
           content.data = res.data
         }
         if(typeof content.data === 'undefined') {
-          alert('没有数据可以导出')
+          this.$message('没有数据可以导出')
           return
         }
         let fileName = `偏移量设置-${this.curFolder.t_name}.json`

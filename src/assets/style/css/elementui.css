@@ -1,0 +1,15 @@
+/* .el-popover {
+  font-size: 16px !important;
+}
+.el-popconfirm {
+  font-size: 15px !important;
+} */
+.el-popconfirm__main {
+  padding: 10px;
+  max-width: 280px;
+  font-size: 12px;
+}
+
+.el-popconfirm__icon {
+  font-size: 32px;
+}

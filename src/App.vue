@@ -4,6 +4,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
   @import url('assets/style/css/base.css');
+  // @import url('assets/style/css/elementui.css')
 </style>
